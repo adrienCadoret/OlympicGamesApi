@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/adrienCadoret/OlympicGamesApi/issues"
   },
-  "homepage": "https://github.com/adrienCadoret/OlympicGamesApi#readme"
+  "homepage": "https://github.com/adrienCadoret/OlympicGamesApi#readme",
+  "dependencies": {
+    "core-js": "^2.4.1",
+    "rxjs": "^5.1.0",
+    "zone.js": "^0.8.4"
+  },
+  "devDependencies": {
+    "ts-node": "~2.0.0"
+  }
+
 }
