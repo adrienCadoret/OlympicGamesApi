@@ -1,0 +1,233 @@
+---
+swagger: "2.0"
+info:
+  description: "An API for managing medals for the Olympic Games. \n\nDon't forget\
+    \ to take it for a spin by clicking on the **Try in Client** button next to each\
+    \ operation! All read operations are public and don't require authentication.\n\
+    \n<div>\n<img src='https://thecontactsapi.apispark.net/v1/img/cropped-contact-img.png'\
+    \ width='90%'>\n<div>\n\n<!-- ![](https://thecontactsapi.apispark.net/v1/img/cropped-contact-img.png)\
+    \ -->\n\n"
+  version: "1.0.0"
+  title: "Olympic Games API"
+  termsOfService: ""
+  contact: {}
+host: "olympicgames-medals.restlet.net"
+basePath: "/v1"
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+security:
+- HTTP_BASIC: []
+paths:
+  /countries:
+    get:
+      summary: "Get the list of countries"
+      description: "Loads a list of countries"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Country"
+            example: "{\n  \"id\": \"0e8dd830-ad98-11e6-bf2e-47644ada7c0f\",\n  \"\
+              name\": \"France\",\n  \"nGold\": 3,\n  \"nSilver\": 2,\n  \"nBronze\"\
+              : 0\n}"
+          examples:
+            application/json: "{\n  \"id\": \"0e8dd830-ad98-11e6-bf2e-47644ada7c0f\"\
+              ,\n  \"name\": \"France\",\n  \"nGold\": 3,\n  \"nSilver\": 2,\n  \"\
+              nBronze\": 0\n}"
+    post:
+      summary: "Create a country"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          description: "A country representation"
+          example: "{\n  \"name\": \"France\",\n  \"nGold\": 0,\n  \"nSilver\": 0,\n\
+            \  \"nBronze\": 0\n}"
+      responses:
+        201:
+          description: "Status 201"
+          headers:
+            Location:
+              type: "string"
+              x-example: "http://localhost:8080/countries/4hhdjj84"
+  /countries/{id}:
+    get:
+      summary: "Get a country"
+      description: "Get a country by id"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/Country"
+          examples:
+            application/json: "{\n  \"id\": \"0e8dd830-ad98-11e6-bf2e-47644ada7c0f\"\
+              ,\n  \"name\": \"France\",\n  \"nGold\": 3,\n  \"nSilver\": 2,\n  \"\
+              nBronze\": 0\n}"
+        404:
+          description: "Country doesn't exist"
+    delete:
+      summary: "Delete a country"
+      parameters: []
+      responses:
+        204:
+          description: "Status 204"
+        404:
+          description: "Status 404"
+    patch:
+      summary: "Change number of medals"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          example: "{\n  \"nGold\": 3\n}"
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      type: "string"
+  /countries/{id}/gold:
+    get:
+      summary: "Get the number of gold medals of a country"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "{\n  \"nGold\": 3\n}"
+          examples:
+            application/json: "{\n  \"nGold\": 3\n}"
+        404:
+          description: "Status 404"
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      type: "string"
+  /countries/{id}/silver:
+    get:
+      summary: "Get the number of silver medals of a country"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "{\n  \"nSilver\": 3\n}"
+          examples:
+            application/json: "{\n  \"nSilver\": 3\n}"
+        404:
+          description: "Status 404"
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      type: "string"
+  /countries/{id}/bronze:
+    get:
+      summary: "Get the number of bronze medals of a country"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "object"
+            example: "{\n  \"nBronze\": 2\n}"
+          examples:
+            application/json: "{\n  \"nBronze\": 2\n}"
+        404:
+          description: "Status 404"
+    parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      type: "string"
+securityDefinitions:
+  HTTP_BASIC:
+    description: "All GET methods are public, meaning that *you can read all the data*.\
+      \ Write operations require authentication and therefore are forbidden to the\
+      \ general public."
+    type: "basic"
+definitions:
+  Error:
+    type: "object"
+    required:
+    - "code"
+    properties:
+      code:
+        type: "integer"
+        minimum: 400
+        maximum: 599
+      description:
+        type: "string"
+        example: "Bad query parameter [$size]: Invalid integer value [abc]"
+      reasonPhrase:
+        type: "string"
+        example: "Bad Request"
+    description: "This general error structure is used throughout this API."
+    example: "{\n  \"code\": 400,\n  \"description\": \"Bad query parameter [$size]:\
+      \ Invalid integer value [abc]\",\n  \"reasonPhrase\": \"Bad Request\"\n}"
+  Country:
+    type: "object"
+    required:
+    - "Name"
+    - "id"
+    - "nGold"
+    properties:
+      id:
+        type: "string"
+        description: "Auto-generated primary key field"
+        example: "0e8ffb10-ad98-11e6-bf2e-47644ada7c0f"
+      Name:
+        type: "string"
+        description: "Nation name"
+        example: "France"
+      nGold:
+        type: "number"
+        format: "int8"
+        description: "Number of gold medals"
+        default: 0.0
+        minimum: 0
+        example: 3
+      nSilver:
+        type: "number"
+        format: "int8"
+        description: "Number of silver medals"
+        default: 0.0
+        minimum: 0
+        example: 5
+      nBronze:
+        type: "number"
+        format: "int8"
+        description: "Number of bronze medals"
+        default: 0.0
+        minimum: 0
+        example: 3
+    description: "A representation of a Country with its medals."
+    example: "{\n  \"id\": \"0e8dd830-ad98-11e6-bf2e-47644ada7c0f\",\n  \"name\":\
+      \ \"France\",\n  \"nGold\": 3,\n  \"nSilver\": 2,\n  \"nBronze\": 0\n}"

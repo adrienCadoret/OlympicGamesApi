@@ -80,10 +80,21 @@ app.post('/countries', function(req, res){
     res.status(201).send('/countries/' + id);
 })
 
+app.delete('/countries/:id', function(req, res){
+    countries.splice(countries.findIndex(function (country) {
+        return country.id === req.params.id;
+    }), 1);
+    const newJson = JSON.stringify(countries);
+    fs.writeFile(countriesPath, newJson);
+    res.sendStatus(204)
+})
+
 app.patch('/countries/:id', function(req, res){
-    if (!_.isNil(id)){
+    if (!_.isNil(req.params.id)){
         var country = getCountry(req.params.id);
-        countries.slice(countries.findIndex(country -> country.id === req.params.id), 1);
+        countries.splice(countries.findIndex(function (country) {
+            return country.id === req.params.id;
+        }), 1);
         if(req.body.hasOwnProperty('name')){
             country.name = req.body.name
         }
@@ -96,6 +107,7 @@ app.patch('/countries/:id', function(req, res){
         if(req.body.hasOwnProperty('nBronze')) {
             country.nBronze = req.body.nBronze
         }
+        countries.push(country)
         const newJson = JSON.stringify(countries);
         fs.writeFile(countriesPath, newJson);
         res.sendStatus(200);
