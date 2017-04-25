@@ -4,10 +4,18 @@ const bodyParser = require('body-parser');
 const countriesPath = './countries.json';
 const shortId = require('shortid');
 const fs = require('fs');
+const basicAuth = require('express-basic-auth');
 
 var countries = require(countriesPath);
 var app = express();
 app.use(bodyParser.json());
+app.use(basicAuth({
+    users: {
+        'Adrien': 'Cadoret',
+        'Thomas': 'Senez',
+        'Paul': 'Defois'
+    }
+}));
 
 var addCountry = function(countryName, goldMed, silverMed, bronzeMed){
     const newId = shortId.generate();
@@ -45,7 +53,6 @@ var getMedal = function(countryId, medalType){
     }
 }
 
-
 app.get('/countries', function(req, res){
     res.send(countries);
 });
@@ -77,3 +84,4 @@ app.post('/countries', function(req, res){
 app.listen(8090, function(){
     console.log("Listening on port 8090");
 })
+
