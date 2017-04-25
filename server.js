@@ -28,6 +28,22 @@ var getCountry = function(id){
     return _.filter(countries, {id : id})[0];
 }
 
+var getMedal = function(countryId, medalType){
+    const country = getCountry(countryId);
+    switch (medalType){
+        case "gold" :
+            return country.nGold;
+            break;
+        case "silver" :
+            return country.nSilver;
+            break;
+        case "bronze" :
+            return country.nBronze;
+            break;
+        default : 
+            return undefined;
+    }
+}
 
 
 app.get('/countries', function(req, res){
@@ -42,6 +58,15 @@ app.get('/countries/:id', function(req, res){
         res.sendStatus(404);
     }
 });
+
+app.get('/countries/:id/:medalType', function(req, res){
+    var medal = getMedal(req.params.id, req.params.medalType);
+    if (!_.isNil(medal)){
+        res.send(req.params.medalType + " medals : " + medal.toString());
+    } else {
+        res.sendStatus(404);
+    }
+})
 
 app.post('/countries', function(req, res){
     var id = addCountry(req.body.name, req.body.nGold, req.body.nSilver, req.body.nBronze);
