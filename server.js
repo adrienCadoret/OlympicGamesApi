@@ -7,6 +7,10 @@ var countries = require(countriesPath);
 var app = express();
 app.use(bodyParser.json());
 
+app.get('/countries', function(req, res){
+    res.send(countries);
+});
+
 app.get('/countries/:id', function(req, res){
     var country = countries.find((c) => c.id === req.params.id);
     if (!_.isNil(country)){
