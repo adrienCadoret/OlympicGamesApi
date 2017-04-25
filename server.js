@@ -1,99 +1,54 @@
-const contactFile = process.env.npm_package_config_contacts;
-var contacts = require(contactFile);
-var commander = require('commander');
-var shortid = require('shortid');
-var jsonfile = require('jsonfile');
-var bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const countriesPath = './countries.json';
+const shortId = require('shortid');
+const fs = require('fs');
 
-
-var express = require('express');
+var countries = require(countriesPath);
 var app = express();
+app.use(bodyParser.json());
 
-app.use(bodyParser.json()); // for parsing application/json
-
-
-app.get('/health', function (req, res) {
-    res.status(204).send('');
-})
-
-app.get('/contacts', function (req, res) {
-    res.status(201).send(contacts);
-})
-
-app.post('/contacts', function (req, res) {
-    contacts.push({
-        id : shortid.generate(),
-        lastName : req.body.lastName,
-        firstName : req.body.firstName
-    });
-    jsonfile.writeFile(contactFile, contacts);
-    res.status(200).send("Créé nickel man")
-})
-
-app.get('/contacts/:id', function (req, res) {
-    var contact = contacts.find((c) => c.id === req.params.id);
-    if(contact !== undefined){
-        res.send(contact);
+var addCountry = function(countryName, goldMed, silverMed, bronzeMed){
+    const newId = shortId.generate();
+    const newCountry = {
+        id : newId,
+        name : countryName,
+        nGold : goldMed || 0,
+        nSilver : silverMed || 0,
+        nBronze : bronzeMed || 0
     }
-    else{
+    countries.push(newCountry);
+    const newJson = JSON.stringify(countries);
+    fs.writeFile(countriesPath, newJson);
+    return newCountry.id;
+}
+
+var getCountry = function(id){
+    return _.filter(countries, {id : id})[0];
+}
+
+
+
+app.get('/countries', function(req, res){
+    res.send(countries);
+});
+
+app.get('/countries/:id', function(req, res){
+    var country = getCountry(req.params.id);
+    if (!_.isNil(country)){
+        res.send(country);
+    } else {
         res.sendStatus(404);
     }
 });
 
-app.delete('/contacts/:id', function (req, res) {
-    var contact = contacts.findIndex((c) => c.id === req.params.id);
-    if(contact == undefined){
-        res.status(404).send("Contact not found");
-    }
-    else{
-        contacts.splice(contact, 1)
-        jsonfile.writeFile(contactFile, contacts);
-        res.status(200).send("Contact removed");
+app.post('/countries', function(req, res){
+    var id = addCountry(req.body.name, req.body.nGold, req.body.nSilver, req.body.nBronze);
+    res.location('/countries/' + id);
+    res.status(201).send('/countries/' + id);
+})
 
-    }
-});
-
-
-commander
-    .command('list')
-    .option('List contacts')
-    .action(function () {
-        for (contact of contacts){
-            console.log(contact.lastName.toUpperCase().concat(' ').concat(contact.firstName));
-        }
-    });
-
-commander
-    .command('add <firstName> <lastName>')
-    .option('Add contact')
-    .action(function (f,l) {
-        contacts.push({
-            id : shortid.generate(),
-            lastName : l,
-            firstName : f
-        });
-        jsonfile.writeFile(contactFile, contacts);
-    });
-
-commander
-    .command('remove <id>')
-    .option('Remove contact')
-    .action(function (pId) {
-        contacts.splice(contacts.findIndex((c) => c.id === pId), 1)
-        jsonfile.writeFile(contactFile, contacts);
-    });
-
-commander
-    .command('serve')
-    .option('Launch server')
-    .action(function () {
-        app.listen(3000, function () {
-            console.log('Server listening on port 3000!');
-        });
-    });
-
-commander.parse(process.argv);
-
-if(!commander.args.length){
-    commander.help();
-}
+app.listen(8090, function(){
+    console.log("Listening on port 8090");
+})
