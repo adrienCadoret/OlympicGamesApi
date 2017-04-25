@@ -24,6 +24,8 @@ var addCountry = function(countryName, goldMed, silverMed, bronzeMed){
     return newCountry.id;
 }
 
+
+
 var getCountry = function(id){
     return _.filter(countries, {id : id})[0];
 }
@@ -33,14 +35,11 @@ var getMedal = function(countryId, medalType){
     switch (medalType){
         case "gold" :
             return country.nGold;
-            break;
         case "silver" :
             return country.nSilver;
-            break;
         case "bronze" :
             return country.nBronze;
-            break;
-        default : 
+        default :
             return undefined;
     }
 }
@@ -72,6 +71,30 @@ app.post('/countries', function(req, res){
     var id = addCountry(req.body.name, req.body.nGold, req.body.nSilver, req.body.nBronze);
     res.location('/countries/' + id);
     res.status(201).send('/countries/' + id);
+})
+
+app.patch('/countries/:id', function(req, res){
+    if (!_.isNil(id)){
+        var country = getCountry(req.params.id);
+        countries.slice(countries.findIndex(country -> country.id === req.params.id), 1);
+        if(req.body.hasOwnProperty('name')){
+            country.name = req.body.name
+        }
+        if(req.body.hasOwnProperty('nGold')){
+            country.nGold = req.body.nGold
+        }
+        if(req.body.hasOwnProperty('nSilver')){
+            country.nSilver = req.body.nSilver
+        }
+        if(req.body.hasOwnProperty('nBronze')) {
+            country.nBronze = req.body.nBronze
+        }
+        const newJson = JSON.stringify(countries);
+        fs.writeFile(countriesPath, newJson);
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(404);
+    }
 })
 
 app.listen(8090, function(){
