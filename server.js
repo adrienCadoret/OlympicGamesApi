@@ -5,9 +5,10 @@ const countriesPath = './countries.json';
 const shortId = require('shortid');
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
-
+const pageNumber = 10;
 var countries = require(countriesPath);
 var app = express();
+
 app.use(bodyParser.json());
 app.use(basicAuth({
     users: {
@@ -53,7 +54,13 @@ var getMedal = function(countryId, medalType){
 }
 
 app.get('/countries', function(req, res){
-    res.send(countries);
+    const page = req.query.page;
+    if(!_.isNil(page)){
+        res.status(206).send(countries.slice(pageNumber*(page-1), pageNumber*page));
+    }
+    else {
+        res.status(206).send(countries.slice(0, 10));
+    }
 });
 
 app.get('/countries/:id', function(req, res){

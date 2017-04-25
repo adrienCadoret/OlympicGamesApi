@@ -26,10 +26,15 @@ paths:
     get:
       summary: "Get the list of countries"
       description: "Loads a list of countries"
-      parameters: []
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        type: "number"
+        x-example: 2.0
       responses:
-        200:
-          description: "Status 200"
+        206:
+          description: "Status 206"
           schema:
             type: "array"
             items:
